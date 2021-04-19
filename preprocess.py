@@ -16,11 +16,11 @@ class preprocess:
             date_under_consideration = from_date_obj + datetime.timedelta(i)
             print(date_under_consideration, 'date')
             if date_under_consideration in df.index:
-                print('good')
                 Open = float(df.loc[date_under_consideration]['Open'])
                 High = float(df.loc[date_under_consideration]['High'])
                 Low = float(df.loc[date_under_consideration]['Low'])
                 Close = float(df.loc[date_under_consideration]['Close'])
+                print('good', Open, High, Low, Close)
                 candlestickobj = candlestick(self.get_upper_shadow_length(Open, High, Low, Close), self.get_lower_shadow_length(
                     Open, High, Low, Close), self.get_body_length(Open, High, Low, Close), self.get_color_candlestick(Open, High, Low, Close))
                 monthly_candlestick_data.append(candlestickobj)
@@ -34,7 +34,6 @@ class preprocess:
             date_under_consideration = from_date_obj + datetime.timedelta(i)
             print(date_under_consideration, 'date')
             if date_under_consideration in df.index:
-                print('good')
                 Open = float(df.loc[date_under_consideration]['Open'])
                 High = float(df.loc[date_under_consideration]['High'])
                 Low = float(df.loc[date_under_consideration]['Low'])
@@ -42,6 +41,8 @@ class preprocess:
                 candlestickobj = candlestick(self.get_upper_shadow_length(Open, High, Low, Close), self.get_lower_shadow_length(
                     Open, High, Low, Close), self.get_body_length(Open, High, Low, Close), self.get_color_candlestick(Open, High, Low, Close))
                 monthly_candlestick_data.append(candlestickobj)
+                # print('good', candlestickobj.upper_shadow_length,
+                #       candlestickobj.lower_shadow_length, candlestickobj.body_length, candlestickobj.color)
         return monthly_candlestick_data
 
     def get_upper_shadow_length(self, opens, high, low, close):
@@ -80,6 +81,18 @@ class preprocess:
             third_month_starting_date.year, third_month_starting_date.month)[1]
         total_days_overall = total_days_first_month + \
             total_days_second_month + total_days_third_month
+        return total_days_overall
+
+    def get_next_two_months_days(self, starting_date):
+        starting_date_obj = datetime.datetime.strptime(
+            starting_date, "%Y-%m-%d")
+        total_days_first_month = calendar.monthrange(
+            starting_date_obj.year, starting_date_obj.month)[1]
+        second_month_starting_date = starting_date_obj + \
+            datetime.timedelta(total_days_first_month)
+        total_days_second_month = calendar.monthrange(
+            second_month_starting_date.year, second_month_starting_date.month)[1]
+        total_days_overall = total_days_first_month + total_days_second_month
         return total_days_overall
 
 

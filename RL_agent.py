@@ -4,20 +4,19 @@ from preprocess import preprocess
 import numpy as np
 import datetime
 import calendar
-from classdefs import candlestick, actionspace, memorybufferstate, candlestickState
+from classdefs import candlestick, actionspace, memorybufferstate, candlestickState, memorybuffer
 import random
 from kmeans import Kmeans
 from preprocess import preprocess
 
 
-def sliding_window(df, date):
+def sliding_window_three_months(df, date):
     preprocess_obj = preprocess()
     monthly_data = preprocess_obj.get_three_monthly_candlestick_data(
         df, date)
     kmeans = Kmeans(monthly_data)
     e = kmeans.get_clusters()
     print('original', e)
-    l1 = []
     ctut = []
     ctlt = []
     ctbl = []
@@ -27,8 +26,8 @@ def sliding_window(df, date):
         ctlt.append(e[i][1])
         ctbl.append(e[i][2])
         ctc.append(e[i][3])
-
     candlestickst = candlestickState(ctut, ctlt, ctbl, ctc)
+    return candlestickst
 
 
 def get_next_month_date(starting_date):
@@ -51,22 +50,66 @@ def select_random_action():
         return 'Short'
 
 
-def get_reward(date):
+def get_reward(date, actionstate):
     preprocess_obj = preprocess()
     starting_date_obj = datetime.datetime.strptime(
         date, "%Y-%m-%d")
-    num_days = preprocess_obj.get_next_three_months_days(date)
+    num_days_next_three_months = preprocess_obj.get_next_three_months_days(
+        date)
+    num_days_next_two_months = preprocess_obj.get_next_two_months_days(date)
     next_three_month_date = starting_date_obj + \
-        datetime.timedelta(num_days)
-
-    df = investpy.get_stock_historical_data(
+        datetime.timedelta(num_days_next_three_months)
+    next_two_month_date = starting_date_obj + \
+        datetime.timedelta(num_days_next_two_months)
+    df_opening_calc = investpy.get_stock_historical_data(
+        stock='AAPL', country='United States', from_date=starting_date_obj.strftime("%d/%m/%Y"), to_date=next_two_month_date.strftime("%d/%m/%Y"))
+    df_closing_calc = investpy.get_stock_historical_data(
         stock='AAPL', country='United States', from_date=starting_date_obj.strftime("%d/%m/%Y"), to_date=next_three_month_date.strftime("%d/%m/%Y"))
-    print(df)
+
+    # to calculate date till it is found in df
+    next_three_month_date_temp = next_three_month_date
+    while next_three_month_date_temp not in df.index:
+        next_three_month_date_temp = next_three_month_date_temp - \
+            datetime.timedelta(1)
+
+    # to calculate date till it is found in df
+    next_two_month_date_temp = next_two_month_date
+    while next_two_month_date_temp not in df.index:
+        next_two_month_date_temp = next_two_month_date_temp - \
+            datetime.timedelta(1)
+
+    if actionstate == 'Long':
+        return df_closing_calc.loc[next_three_month_date_temp]['Close'] - df_opening_calc.loc[next_two_month_date_temp]['Close']
+    if actionstate == 'Short':
+        return -(df_closing_calc.loc[next_three_month_date_temp]['Close'] - df_opening_calc.loc[next_two_month_date_temp]['Close'])
+    if actionstate == 'Hold':
+        return 0
 
 
-# def fill_with_random_action_value(df, date):
-#     for i in range(0, 12):
+def fill_state_action_reward_values(df, date):
+    candlestickState = sliding_window_three_months(df, date)
+    action = select_random_action()
+    reward = get_reward(date, action)
+    memorybufferState = memorybufferstate(candlestickState, action, reward)
+    memorybuffer.append(memorybufferState)
+
+
+def cumulative_before_n_trading_times_calc(df, date):
+    fill_state_action_reward_values(df, date)
+    for i in range(0, 11):
+        date = get_next_month_date(date)
+        fill_state_action_reward_values(df, date)
+
+
 df = investpy.get_stock_historical_data(
     stock='AAPL', country='United States', from_date='01/01/2010', to_date='01/01/2020')
 
-print(get_reward('2010-01-01'))
+cumulative_before_n_trading_times_calc(df, '2010-01-01')
+
+for i in range(0, len(memorybuffer)):
+    print(memorybuffer[i].candlestickstate.centreofut)
+    print(memorybuffer[i].candlestickstate.centreoflt)
+    print(memorybuffer[i].candlestickstate.centreofbl)
+    print(memorybuffer[i].candlestickstate.centreofcolor)
+    print(memorybuffer[i].action)
+    print(memorybuffer[i].reward)
