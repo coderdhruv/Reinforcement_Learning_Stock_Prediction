@@ -1,4 +1,4 @@
-from candlestick import candlestick
+from classdefs import candlestick
 import datetime
 import calendar
 import investpy
@@ -83,14 +83,14 @@ class preprocess:
         return total_days_overall
 
 
-df = investpy.get_stock_historical_data(
-    stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2001')
-print(df)
-preprocess_obj = preprocess()
-myobject = datetime.datetime.strptime('2000-01-01', "%Y-%m-%d")
-myobject2 = datetime.datetime(2000, 1, 1, 0, 0)
-monthly_data = preprocess_obj.get_three_monthly_candlestick_data(
-    df, '2000-01-01')
-print(monthly_data[0].upper_shadow_length,
-      monthly_data[0].lower_shadow_length, monthly_data[0].body_length, monthly_data[0].color)
-print(len(monthly_data))
+# df = investpy.get_stock_historical_data(
+#     stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2001')
+# print(df)
+# preprocess_obj = preprocess()
+# myobject = datetime.datetime.strptime('2000-01-01', "%Y-%m-%d")
+# myobject2 = datetime.datetime(2000, 1, 1, 0, 0)
+# monthly_data = preprocess_obj.get_three_monthly_candlestick_data(
+#     df, '2000-01-01')
+# print(monthly_data[0].upper_shadow_length,
+#       monthly_data[0].lower_shadow_length, monthly_data[0].body_length, monthly_data[0].color)
+# print(len(monthly_data))

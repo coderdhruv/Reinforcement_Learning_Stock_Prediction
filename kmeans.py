@@ -32,13 +32,13 @@ class Kmeans:
         return self.kmeans.labels_
 
 
-df = investpy.get_stock_historical_data(
-    stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2001')
-print(df)
-preprocess_obj = preprocess()
-myobject = datetime.datetime.strptime('2000-01-01', "%Y-%m-%d")
-myobject2 = datetime.datetime(2000, 1, 1, 0, 0)
-monthly_data = preprocess_obj.get_three_monthly_candlestick_data(
-    df, '2000-01-01')
-kmeans = Kmeans(monthly_data)
-print(kmeans.get_clusters())
+# df = investpy.get_stock_historical_data(
+#     stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2001')
+# print(df)
+# preprocess_obj = preprocess()
+# myobject = datetime.datetime.strptime('2000-01-01', "%Y-%m-%d")
+# myobject2 = datetime.datetime(2000, 1, 1, 0, 0)
+# monthly_data = preprocess_obj.get_three_monthly_candlestick_data(
+#     df, '2000-01-01')
+# kmeans = Kmeans(monthly_data)
+# print(kmeans.get_clusters())
