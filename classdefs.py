@@ -28,4 +28,21 @@ class candlestickState:
         self.centreofcolor = centreofcolor
 
 
+# class onlineclusteringdatapoint:
+#     def __init__(self, xi, density_xi):
+#         self.xi = xi
+#         self.density_xi = density_xi
+
+
+# class onlineclusteringenv:
+#     def __init__(self, prev_mean_x, prev_mean_X):
+#         self.prev_mean_x = prev_mean_x
+#         self.prev_mean_X = prev_mean_X
+
+pie_dictionary = {}
+muN = {}
+XN = {}
+
+
 memorybuffer = []
+onlineclusteringxiarray = []

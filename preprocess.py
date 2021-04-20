@@ -7,6 +7,19 @@ import numpy as np
 
 
 class preprocess:
+    def get_daily_candlestick_data(self, df, date):
+        date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
+        if date_obj in df.index:
+            Open = float(df.loc[date_obj]['Open'])
+            High = float(df.loc[date_obj]['High'])
+            Low = float(df.loc[date_obj]['Low'])
+            Close = float(df.loc[date_obj]['Close'])
+            candlestickobj = candlestick(self.get_upper_shadow_length(Open, High, Low, Close), self.get_lower_shadow_length(
+                Open, High, Low, Close), self.get_body_length(Open, High, Low, Close), self.get_color_candlestick(Open, High, Low, Close))
+            return candlestickobj
+        else:
+            return None
+
     def get_monthly_candlestick_data(self, df, from_date):
         monthly_candlestick_data = []
         from_date_obj = datetime.datetime.strptime(from_date, "%Y-%m-%d")
@@ -14,7 +27,7 @@ class preprocess:
             from_date_obj.year, from_date_obj.month)[1]
         for i in range(0, total_days_current_month):
             date_under_consideration = from_date_obj + datetime.timedelta(i)
-            print(date_under_consideration, 'date')
+            #print(date_under_consideration, 'date')
             if date_under_consideration in df.index:
                 Open = float(df.loc[date_under_consideration]['Open'])
                 High = float(df.loc[date_under_consideration]['High'])
@@ -32,7 +45,7 @@ class preprocess:
         total_days_overall = self.get_next_three_months_days(from_date)
         for i in range(0, total_days_overall):
             date_under_consideration = from_date_obj + datetime.timedelta(i)
-            print(date_under_consideration, 'date')
+            #print(date_under_consideration, 'date')
             if date_under_consideration in df.index:
                 Open = float(df.loc[date_under_consideration]['Open'])
                 High = float(df.loc[date_under_consideration]['High'])
@@ -96,10 +109,13 @@ class preprocess:
         return total_days_overall
 
 
-# df = investpy.get_stock_historical_data(
-#     stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2001')
+df = investpy.get_stock_historical_data(
+    stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2001')
 # print(df)
-# preprocess_obj = preprocess()
+preprocess_obj = preprocess()
+candlestick_daily = preprocess_obj.get_daily_candlestick_data(df, '2000-01-03')
+print(candlestick_daily.upper_shadow_length,
+      candlestick_daily.lower_shadow_length)
 # myobject = datetime.datetime.strptime('2000-01-01', "%Y-%m-%d")
 # myobject2 = datetime.datetime(2000, 1, 1, 0, 0)
 # monthly_data = preprocess_obj.get_three_monthly_candlestick_data(

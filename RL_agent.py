@@ -11,6 +11,8 @@ from preprocess import preprocess
 
 
 def sliding_window_three_months(df, date):
+    starting_date_obj = datetime.datetime.strptime(
+        date, "%Y-%m-%d")
     preprocess_obj = preprocess()
     monthly_data = preprocess_obj.get_three_monthly_candlestick_data(
         df, date)
@@ -50,6 +52,42 @@ def select_random_action():
         return 'Short'
 
 
+def get_action_for_training(df, date):
+    preprocess_obj = preprocess()
+    starting_date_obj = datetime.datetime.strptime(
+        date, "%Y-%m-%d")
+    num_days_next_three_months = preprocess_obj.get_next_three_months_days(
+        date)
+    num_days_next_two_months = preprocess_obj.get_next_two_months_days(date)
+    next_three_month_date = starting_date_obj + \
+        datetime.timedelta(num_days_next_three_months)
+    next_two_month_date = starting_date_obj + \
+        datetime.timedelta(num_days_next_two_months)
+    df_opening_calc = investpy.get_stock_historical_data(
+        stock='SBI', country='India', from_date=starting_date_obj.strftime("%d/%m/%Y"), to_date=next_two_month_date.strftime("%d/%m/%Y"))
+    df_closing_calc = investpy.get_stock_historical_data(
+        stock='SBI', country='India', from_date=starting_date_obj.strftime("%d/%m/%Y"), to_date=next_three_month_date.strftime("%d/%m/%Y"))
+
+    # to calculate date till it is found in df
+    next_three_month_date_temp = next_three_month_date
+    while next_three_month_date_temp not in df.index:
+        next_three_month_date_temp = next_three_month_date_temp - \
+            datetime.timedelta(1)
+
+    # to calculate date till it is found in df
+    next_two_month_date_temp = next_two_month_date
+    while next_two_month_date_temp not in df.index:
+        next_two_month_date_temp = next_two_month_date_temp - \
+            datetime.timedelta(1)
+
+    if df_closing_calc.loc[next_three_month_date_temp]['Close'] > df_opening_calc.loc[next_two_month_date_temp]['Close']:
+        return 'Long'
+    elif df_closing_calc.loc[next_three_month_date_temp]['Close'] < df_opening_calc.loc[next_two_month_date_temp]['Close']:
+        return 'Short'
+    else:
+        return 'Hold'
+
+
 def get_reward(df, date, actionstate):
     preprocess_obj = preprocess()
     starting_date_obj = datetime.datetime.strptime(
@@ -62,10 +100,12 @@ def get_reward(df, date, actionstate):
     next_two_month_date = starting_date_obj + \
         datetime.timedelta(num_days_next_two_months)
     df_opening_calc = investpy.get_stock_historical_data(
-        stock='AAPL', country='United States', from_date=starting_date_obj.strftime("%d/%m/%Y"), to_date=next_two_month_date.strftime("%d/%m/%Y"))
+        stock='SBI', country='India', from_date=starting_date_obj.strftime("%d/%m/%Y"), to_date=next_two_month_date.strftime("%d/%m/%Y"))
     df_closing_calc = investpy.get_stock_historical_data(
-        stock='AAPL', country='United States', from_date=starting_date_obj.strftime("%d/%m/%Y"), to_date=next_three_month_date.strftime("%d/%m/%Y"))
+        stock='SBI', country='India', from_date=starting_date_obj.strftime("%d/%m/%Y"), to_date=next_three_month_date.strftime("%d/%m/%Y"))
 
+    #print('opening', df_opening_calc)
+    #print('closing', df_closing_calc)
     # to calculate date till it is found in df
     next_three_month_date_temp = next_three_month_date
     while next_three_month_date_temp not in df.index:
@@ -88,7 +128,8 @@ def get_reward(df, date, actionstate):
 
 def fill_state_action_reward_values(df, date):
     candlestickState = sliding_window_three_months(df, date)
-    action = select_random_action()
+    #action = select_random_action()
+    action = get_action_for_training(df, date)
     reward = get_reward(df, date, action)
     memorybufferState = memorybufferstate(candlestickState, action, reward)
     memorybuffer.append(memorybufferState)
@@ -106,16 +147,16 @@ def get_loaded_memory_buffer(df, date):
     return memorybuffer
 
 
-# df = investpy.get_stock_historical_data(
-#     stock='AAPL', country='United States', from_date='01/01/1981', to_date='01/01/2021')
+df = investpy.get_stock_historical_data(
+    stock='SBI', country='India', from_date='01/01/1981', to_date='01/01/2021')
 
-# print(df)
-# cumulative_before_n_trading_times_calc(df, '2010-01-01')
+print(df)
 
-# for i in range(0, len(memorybuffer)):
-#     print(memorybuffer[i].candlestickstate.centreofut)
-#     print(memorybuffer[i].candlestickstate.centreoflt)
-#     print(memorybuffer[i].candlestickstate.centreofbl)
-#     print(memorybuffer[i].candlestickstate.centreofcolor)
-#     print(memorybuffer[i].action)
-#     print(memorybuffer[i].reward)
+cumulative_before_n_trading_times_calc(df, '2017-01-01')
+for i in range(0, len(memorybuffer)):
+    print(memorybuffer[i].candlestickstate.centreofut)
+    print(memorybuffer[i].candlestickstate.centreoflt)
+    print(memorybuffer[i].candlestickstate.centreofbl)
+    print(memorybuffer[i].candlestickstate.centreofcolor)
+    print(memorybuffer[i].action)
+    print(memorybuffer[i].reward)
