@@ -17,6 +17,7 @@ class onlineclustering:
         diff_color = abs(x1.color - x2.color)
         return diff_upper_shadow**2 + diff_lower_shadow**2 + diff_body_length**2 + diff_color**2
 
+    
     def distance_sum(self, xn, onlineclusteringxiarray):
         sum = 0
         for i in range(0, len(onlineclusteringxiarray)):
@@ -33,7 +34,7 @@ class onlineclustering:
     def calc_pieN_xi(self, xi):
         return self.pie_dictionary[xi] - self.distance_candle_stockobj(xi, self.muN)
 
-    def multipy_xi(self, xi, t):
+    def multiply_xi(self, xi, t):
         return candlestick(t*(xi.upper_shadow_length), t*(xi.lower_shadow_length), t*(xi.body_length), t*(xi.color))
 
     def add_xi(self, x1, x2):
@@ -45,9 +46,18 @@ class onlineclustering:
         diff_color = abs(x1.color + x2.color)
         return diff_upper_shadow + diff_lower_shadow + diff_body_length + diff_color
 
+    def sum_pien(self,xn):
+        sum_of_pien=0
+        for i in range (1,n):
+            sum_of_pien+=self.pie_dictionary[xi]
+        sum_of_pien+=2*calc_pieN_xn(xn)
+        return sum_of_pien
+
     def update_muN(self, xn):
         n = len(onlineclusteringxiarray)+1
-        self.muN = np.array
+        self.muN = self.add_xi(self.multiply_xi(self.muN,(n-1)/n),self.multiply_xi(xn,1/n))
+        self.XN = self.add_xi(self.multiply_xi(self.XN,(n-1)/n),self.multiply_xi(self.xi_squared(xn),1/n))
+        
 
 
         # print(df)
