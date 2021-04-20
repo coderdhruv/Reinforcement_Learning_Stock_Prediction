@@ -50,7 +50,7 @@ def select_random_action():
         return 'Short'
 
 
-def get_reward(date, actionstate):
+def get_reward(df, date, actionstate):
     preprocess_obj = preprocess()
     starting_date_obj = datetime.datetime.strptime(
         date, "%Y-%m-%d")
@@ -89,7 +89,7 @@ def get_reward(date, actionstate):
 def fill_state_action_reward_values(df, date):
     candlestickState = sliding_window_three_months(df, date)
     action = select_random_action()
-    reward = get_reward(date, action)
+    reward = get_reward(df, date, action)
     memorybufferState = memorybufferstate(candlestickState, action, reward)
     memorybuffer.append(memorybufferState)
 
@@ -101,15 +101,21 @@ def cumulative_before_n_trading_times_calc(df, date):
         fill_state_action_reward_values(df, date)
 
 
-df = investpy.get_stock_historical_data(
-    stock='AAPL', country='United States', from_date='01/01/2010', to_date='01/01/2020')
+def get_loaded_memory_buffer(df, date):
+    cumulative_before_n_trading_times_calc(df, date)
+    return memorybuffer
 
-cumulative_before_n_trading_times_calc(df, '2010-01-01')
 
-for i in range(0, len(memorybuffer)):
-    print(memorybuffer[i].candlestickstate.centreofut)
-    print(memorybuffer[i].candlestickstate.centreoflt)
-    print(memorybuffer[i].candlestickstate.centreofbl)
-    print(memorybuffer[i].candlestickstate.centreofcolor)
-    print(memorybuffer[i].action)
-    print(memorybuffer[i].reward)
+# df = investpy.get_stock_historical_data(
+#     stock='AAPL', country='United States', from_date='01/01/1981', to_date='01/01/2021')
+
+# print(df)
+# cumulative_before_n_trading_times_calc(df, '2010-01-01')
+
+# for i in range(0, len(memorybuffer)):
+#     print(memorybuffer[i].candlestickstate.centreofut)
+#     print(memorybuffer[i].candlestickstate.centreoflt)
+#     print(memorybuffer[i].candlestickstate.centreofbl)
+#     print(memorybuffer[i].candlestickstate.centreofcolor)
+#     print(memorybuffer[i].action)
+#     print(memorybuffer[i].reward)
