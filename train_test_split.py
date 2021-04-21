@@ -24,9 +24,10 @@ f2 = open("dataset_test.csv", 'a')
 
 for i in range(train_length, n):
     res = ""
-    for j in range(len(data[i]-2)):
+    for j in range(len(data[i])-2):
         res += str(data[i][j])
         res += ','
+    # print(str(data[i][len(data[i])-1]))
     res += str(data[i][len(data[i])-1])
     res += '\n'
     f2.write(res)
