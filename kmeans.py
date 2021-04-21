@@ -61,15 +61,16 @@ class KmeansDaily:
         return self.kmeans.labels_[data_point_index]
 
 
-df = investpy.get_stock_historical_data(
-    stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2010')
-print(df)
-preprocess_obj = preprocess()
-training_data = preprocess_obj.get_training_data(
-    'AAPL', 'United States', '2000-01-01', '2010-01-01')
-# print(training_data)
-kmeansdaily = KmeansDaily(training_data)
-print(kmeansdaily.get_labels_list())
-print(kmeansdaily.get_clusters())
-print(kmeansdaily.get_clusters()[0])
-print(kmeansdaily.get_labels_for_each_data_point(1))
+# df = investpy.get_stock_historical_data(
+#     stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2010')
+# print(df)
+# preprocess_obj = preprocess()
+# training_data = preprocess_obj.get_training_data(
+#     'AAPL', 'United States', '2000-01-01', '2010-01-01')
+# # print(training_data)
+# kmeansdaily = KmeansDaily(training_data)
+# print(len(kmeansdaily.get_labels_list()))
+# print(kmeansdaily.get_labels_list())
+# print(kmeansdaily.get_clusters())
+# print(kmeansdaily.get_clusters()[0])
+# print(kmeansdaily.get_labels_for_each_data_point(1))

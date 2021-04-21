@@ -31,6 +31,7 @@ def sliding_window_three_days(df, date, training_data):
     index_of_starting_data = get_index_for_object(
         candlestickstate, training_data)
     clustercentres = kmeansDaily.get_clusters()
+    print(index_of_starting_data)
     index_of_first_cluster_center = kmeansDaily.get_labels_for_each_data_point(
         index_of_starting_data)
     index_of_second_cluster_center = kmeansDaily.get_labels_for_each_data_point(
@@ -112,11 +113,13 @@ def cumulative_before_n_trading_times_calc(df, date, training_data):
     starting_date_obj = datetime.datetime.strptime(
         date, "%Y-%m-%d")
     next_date = starting_date_obj + datetime.timedelta(1)
-    for i in range(0, len(training_data)-3):
-        while next_date not in df.index:
+    last_date = starting_date_obj + datetime.timedelta(len(training_data)-10)
+    for i in range(0, len(training_data)-20):
+        while next_date not in df.index and next_date < last_date:
             next_date = next_date + datetime.timedelta(1)
-        fill_state_action_reward_values(
-            df, next_date.strftime("%Y-%m-%d"), training_data)
+        if next_date < last_date:
+            fill_state_action_reward_values(
+                df, next_date.strftime("%Y-%m-%d"), training_data)
         next_date = next_date + datetime.timedelta(1)
 
 
@@ -130,8 +133,9 @@ df = investpy.get_stock_historical_data(
 
 preprocess2 = preprocess()
 training_data = preprocess2.get_training_data(
-    'AAPL', 'United States', '2000-01-01', '2000-02-01')
+    'AAPL', 'United States', '2000-01-01', '2001-04-01')
 
+print(len(training_data))
 starting_date_obj1 = datetime.datetime.strptime(
     '2000-01-01', "%Y-%m-%d")
 while starting_date_obj1 not in df.index:
