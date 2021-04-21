@@ -35,7 +35,8 @@ class FCmeans:
 
 class FCmeansDaily:
     def __init__(self, training_data):
-        data_for_clustering = self.preprocess_monthly_data_to_fit_fcmeans_library(
+        self.training_data = training_data
+        data_for_clustering = self.preprocess_daily_data_to_fit_fcmeans_library(
             training_data)
         self.fcmeans = FCM(n_clusters=5, random_state=0)
         self.fcmeans.fit(data_for_clustering)
@@ -56,18 +57,21 @@ class FCmeansDaily:
         return self.fcmeans.centers
 
     def get_labels_list(self):
-        X = self.preprocess_monthly_data_to_fit_fcmeans_library(
-            training_data)
-        return self.fcm.predict(X)
+        X = self.preprocess_daily_data_to_fit_fcmeans_library(
+            self.training_data)
+        return self.fcmeans.predict(X)
 
     def get_labels_for_each_data_point(self, data_point_index):
         return self.get_labels_list()[data_point_index]
 
 
 df = investpy.get_stock_historical_data(
-    stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2001')
+    stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2010')
 print(df)
+preprocess_obj = preprocess()
 daily_data = preprocess_obj.get_training_data(
-    'AAPL', 'United States', '2000-01-01', '2000-02-01')
+    'AAPL', 'United States', '2000-01-01', '2010-01-01')
 fcmeans = FCmeansDaily(daily_data)
 print(fcmeans.get_clusters())
+print(fcmeans.get_labels_for_each_data_point(400))
+print(fcmeans.get_labels_list())
