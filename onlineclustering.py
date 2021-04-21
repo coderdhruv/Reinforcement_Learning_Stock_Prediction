@@ -88,7 +88,19 @@ class onlineclustering:
         return min
 
     def check_if_new_data_point_cluster_center_and_update_env(self, xn):
-        return true
+        density_xn=self.calc_density_xn(xn)
+        if density_xn>self.get_max_DN_xi_star or density_xn<self.get_min_DN_xi_star:
+            return xn
+        else:
+            min = float('inf')
+            k=0
+            for i in range(0, len(onlineclusteringclustercentres)):
+                argmin = abs(self.density[onlineclusteringclustercentres[i]]-self.calc_density_xn)
+                if argmin < min:
+                    min=argmin
+                    k=i
+            return onlineclusteringclustercentres[k]
+        
 
 
 preprocess_obj = preprocess()
