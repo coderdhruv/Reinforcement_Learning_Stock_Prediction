@@ -150,6 +150,9 @@ def get_loaded_memory_buffer(df, date):
 df = investpy.get_stock_historical_data(
     stock='SBI', country='India', from_date='01/01/1981', to_date='01/01/2021')
 
+preprocess = preprocess()
+training_data = preprocess.get_training_data(
+    'AAPL', 'United States', '2000-01-01', '2010-01-01')
 print(df)
 
 cumulative_before_n_trading_times_calc(df, '2017-01-01')

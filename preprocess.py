@@ -39,6 +39,22 @@ class preprocess:
                 monthly_candlestick_data.append(candlestickobj)
         return monthly_candlestick_data
 
+    def get_training_data(self, stock_name, country, from_date, to_date):
+        training_data = []
+        from_date_obj = datetime.datetime.strptime(from_date, "%Y-%m-%d")
+        to_date_obj = datetime.datetime.strptime(to_date, "%Y-%m-%d")
+        df = investpy.get_stock_historical_data(
+            stock=stock_name, country=country, from_date=from_date_obj.strftime("%d/%m/%Y"), to_date=to_date_obj.strftime("%d/%m/%Y"))
+        for i in range(0, len(df)):
+            Open = float(df.iloc[i]['Open'])
+            High = float(df.iloc[i]['High'])
+            Low = float(df.iloc[i]['Low'])
+            Close = float(df.iloc[i]['Close'])
+            candlestickobj = candlestick(self.get_upper_shadow_length(Open, High, Low, Close), self.get_lower_shadow_length(
+                Open, High, Low, Close), self.get_body_length(Open, High, Low, Close), self.get_color_candlestick(Open, High, Low, Close))
+            training_data.append(candlestickobj)
+        return training_data
+
     def get_three_monthly_candlestick_data(self, df, from_date):
         monthly_candlestick_data = []
         from_date_obj = datetime.datetime.strptime(from_date, "%Y-%m-%d")
@@ -110,12 +126,14 @@ class preprocess:
 
 
 df = investpy.get_stock_historical_data(
-    stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2001')
+    stock='AAPL', country='United States', from_date='01/01/2000', to_date='01/01/2010')
+
+
 # print(df)
-preprocess_obj = preprocess()
-candlestick_daily = preprocess_obj.get_daily_candlestick_data(df, '2000-01-03')
-print(candlestick_daily.upper_shadow_length,
-      candlestick_daily.lower_shadow_length)
+# preprocess_obj = preprocess()
+# candlestick_daily = preprocess_obj.get_daily_candlestick_data(df, '2000-01-03')
+# print(candlestick_daily.upper_shadow_length,
+#       candlestick_daily.lower_shadow_length)
 # myobject = datetime.datetime.strptime('2000-01-01', "%Y-%m-%d")
 # myobject2 = datetime.datetime(2000, 1, 1, 0, 0)
 # monthly_data = preprocess_obj.get_three_monthly_candlestick_data(

@@ -39,10 +39,7 @@ class candlestickState:
 #         self.prev_mean_x = prev_mean_x
 #         self.prev_mean_X = prev_mean_X
 
-pie_dictionary = {}
-muN = {}
-XN = {}
-
 
 memorybuffer = []
 onlineclusteringxiarray = []
+onlineclusteringclustercentres = []
