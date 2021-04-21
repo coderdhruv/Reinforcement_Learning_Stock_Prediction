@@ -14,7 +14,7 @@ def get_index_for_object(candlestickst, training_data):
     flag = -1
     for i in range(0, len(training_data)):
         if candlestickst.upper_shadow_length == training_data[i].upper_shadow_length and candlestickst.lower_shadow_length == training_data[i].lower_shadow_length and candlestickst.body_length == training_data[i].body_length and candlestickst.color == training_data[i].color:
-            flag = i
+            return i
         # if candlestickst is training_data[i]:
         #     return i
     return flag
@@ -32,16 +32,22 @@ def sliding_window_three_days(df, date, training_data):
         candlestickstate, training_data)
     clustercentres = kmeansDaily.get_clusters()
     print(index_of_starting_data)
-    index_of_first_cluster_center = kmeansDaily.get_labels_for_each_data_point(
-        index_of_starting_data)
-    index_of_second_cluster_center = kmeansDaily.get_labels_for_each_data_point(
-        index_of_starting_data + 1)
-    index_of_third_cluster_center = kmeansDaily.get_labels_for_each_data_point(
-        index_of_starting_data + 2)
-    sliding_window_state.append(clustercentres[index_of_first_cluster_center])
-    sliding_window_state.append(clustercentres[index_of_second_cluster_center])
-    sliding_window_state.append(clustercentres[index_of_third_cluster_center])
-    return sliding_window_state
+    if index_of_starting_data < len(training_data):
+        index_of_first_cluster_center = kmeansDaily.get_labels_for_each_data_point(
+            index_of_starting_data)
+        index_of_second_cluster_center = kmeansDaily.get_labels_for_each_data_point(
+            index_of_starting_data + 1)
+        index_of_third_cluster_center = kmeansDaily.get_labels_for_each_data_point(
+            index_of_starting_data + 2)
+        sliding_window_state.append(
+            clustercentres[index_of_first_cluster_center])
+        sliding_window_state.append(
+            clustercentres[index_of_second_cluster_center])
+        sliding_window_state.append(
+            clustercentres[index_of_third_cluster_center])
+        return sliding_window_state
+    else:
+        return sliding_window_state
 
 
 def select_random_action():
@@ -147,6 +153,7 @@ memorybuffer = get_loaded_memory_buffer(
 # cumulative_before_n_trading_times_calc(df, '2017-01-01')
 for i in range(0, len(memorybuffer)):
     for j in range(0, 3):
-        print(memorybuffer[i].candlestickstate[j])
+        if memorybuffer[i]:
+            print(memorybuffer[i].candlestickstate[j])
     print(memorybuffer[i].action)
     print(memorybuffer[i].reward)
